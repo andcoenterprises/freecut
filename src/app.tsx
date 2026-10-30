@@ -6,7 +6,8 @@ import { ErrorBoundary } from '@/components/error-boundary'
 import { PwaInstallPrompt } from '@/app/pwa-install-prompt'
 import { RouteErrorScreen } from '@/app/route-error'
 import { WorkspaceGate } from '@/features/workspace-gate/workspace-gate'
-import { APP_BASE } from '@/config/hosting'
+import { APP_BASE, HOSTED } from '@/config/hosting'
+import { startAlumiSync } from '@/app/alumi-sync'
 import { routeTree } from './routeTree.gen'
 
 // Route errors (thrown from beforeLoad/loader) never reach the React
@@ -30,6 +31,12 @@ declare module '@tanstack/react-router' {
 
 export function App() {
   const [showToaster, setShowToaster] = useState(false)
+
+  // Hosted in Studio: keep each post's project in Studio after every save.
+  useEffect(() => {
+    if (!HOSTED) return
+    return startAlumiSync()
+  }, [])
 
   // Prevent default browser zoom application-wide
   useEffect(() => {

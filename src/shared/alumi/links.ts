@@ -13,6 +13,8 @@ export interface StudioLink {
   workspaceId: string
   /** Where Studio is (the editor is served under it): e.g. https://studio.alumiai.com */
   origin: string
+  /** Studio media id → this project's media id, for every file both sides have. */
+  mediaMap?: Record<string, string>
 }
 
 const KEY = 'alumi-studio-links'
@@ -47,6 +49,13 @@ export function studioLinkForProject(projectId: string): StudioLink | undefined 
 
 export function projectIdForPost(postId: string): string | undefined {
   return Object.entries(read()).find(([, link]) => link.postId === postId)?.[0]
+}
+
+export function setLinkMediaMap(projectId: string, mediaMap: Record<string, string>): void {
+  const links = read()
+  const link = links[projectId]
+  if (!link) return
+  write({ ...links, [projectId]: { ...link, mediaMap } })
 }
 
 export function forgetProjectLink(projectId: string): void {

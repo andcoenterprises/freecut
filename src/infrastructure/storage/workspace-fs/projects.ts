@@ -11,6 +11,7 @@
  */
 
 import type { Project } from '@/types/project'
+import { notifyProjectSaved } from '@/shared/alumi/sync-events'
 import { createLogger } from '@/shared/logging/logger'
 import { getHandle, saveHandle, deleteHandle } from '@/infrastructure/storage/handles-db'
 
@@ -242,6 +243,7 @@ export async function createProject(project: Project): Promise<Project> {
       name: project.name,
       updatedAt: project.updatedAt,
     })
+    notifyProjectSaved(project)
     return project
   } catch (error) {
     logger.error('createProject failed', error)
@@ -289,7 +291,9 @@ export async function updateProject(id: string, updates: Partial<Project>): Prom
 
     await writeJsonAtomic(root, projectJsonPath(id), nextSerialized)
     await upsertIndexEntry(root, { id, name: nextSerialized.name, updatedAt })
-    return restoreRootFolderHandle(nextSerialized)
+    const saved = await restoreRootFolderHandle(nextSerialized)
+    notifyProjectSaved(saved)
+    return saved
   } catch (error) {
     logger.error(`updateProject(${id}) failed`, error)
     throw error

@@ -19,15 +19,16 @@ function extensionFor(mimeType: string): string {
   return 'mp4'
 }
 
-export async function saveExportToStudio(
-  blob: Blob,
-  mimeType: string,
-  projectName: string,
+/**
+ * Send a file to the post as its own media, with Studio's upload token. Returns
+ * the Studio media id it was recorded as.
+ */
+export async function uploadFileToStudio(
+  file: File,
   link: StudioLink,
-): Promise<{ ok: true } | { ok: false; error: string }> {
-  const safeName = (projectName.trim() || 'video').replace(/[^\w.\- ]+/g, '_').slice(0, 60)
-  const name = `${safeName}.${extensionFor(mimeType)}`
-  const file = new File([blob], name, { type: mimeType })
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ ok: true; mediaId: string } | { ok: false; error: string }> {
+  const name = file.name.replace(/[^\w.\- ]+/g, '_').slice(0, 80) || 'file'
   try {
     const stored = await upload(`creative/${link.workspaceId}/media/${link.postId}/${name}`, file, {
       access: 'private',
@@ -35,7 +36,7 @@ export async function saveExportToStudio(
       clientPayload: JSON.stringify({ workspaceId: link.workspaceId, kind: 'post-media' }),
       multipart: file.size > MULTIPART_FROM_BYTES,
     })
-    const response = await fetch(
+    const response = await fetchImpl(
       `${link.origin}/api/creative/editor/${encodeURIComponent(link.postId)}`,
       {
         method: 'POST',
@@ -43,18 +44,33 @@ export async function saveExportToStudio(
         body: JSON.stringify({ pathname: stored.pathname, url: stored.url, name }),
       },
     )
-    if (!response.ok) {
-      const body = (await response.json().catch(() => ({}))) as { error?: string }
+    const data = (await response.json().catch(() => ({}))) as {
+      error?: string
+      media?: { id?: string }
+    }
+    if (!response.ok || !data.media?.id) {
       return {
         ok: false,
-        error: body.error || `Studio didn't accept the video (${response.status}).`,
+        error: data.error || `Studio didn't accept the file (${response.status}).`,
       }
     }
-    return { ok: true }
+    return { ok: true, mediaId: data.media.id }
   } catch (error) {
     return {
       ok: false,
       error: error instanceof Error ? error.message : 'The upload failed. Try again.',
     }
   }
+}
+
+export async function saveExportToStudio(
+  blob: Blob,
+  mimeType: string,
+  projectName: string,
+  link: StudioLink,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const safeName = (projectName.trim() || 'video').replace(/[^\w.\- ]+/g, '_').slice(0, 60)
+  const file = new File([blob], `${safeName}.${extensionFor(mimeType)}`, { type: mimeType })
+  const r = await uploadFileToStudio(file, link)
+  return r.ok ? { ok: true } : r
 }
