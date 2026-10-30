@@ -3,6 +3,7 @@
  * output size and time, and the download/close actions.
  */
 
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Clock, Download, HardDrive } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -20,6 +21,8 @@ export interface ExportCompleteViewProps {
   elapsedSeconds: number
   onClose: () => void
   onDownload: () => void
+  /** Extra actions beside Download (a host app's "save back" button). */
+  extraActions?: ReactNode
 }
 
 export function ExportCompleteView({
@@ -30,6 +33,7 @@ export function ExportCompleteView({
   elapsedSeconds,
   onClose,
   onDownload,
+  extraActions,
 }: ExportCompleteViewProps) {
   const { t } = useTranslation()
 
@@ -62,6 +66,7 @@ export function ExportCompleteView({
       </div>
 
       <div className="flex justify-end gap-2">
+        {extraActions}
         <Button variant="outline" onClick={onClose}>
           {t('common.close')}
         </Button>
