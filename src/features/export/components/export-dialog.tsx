@@ -39,6 +39,7 @@ import { ExportDialogHeading } from './export-dialog-heading'
 import { ExportSettingsView } from './export-settings-view'
 import { ExportProgressView } from './export-progress-view'
 import { ExportCompleteView } from './export-complete-view'
+import { SaveToStudioButton } from './save-to-studio-button'
 import { ExportNoticeView } from './export-notice-view'
 import { useBrokenMediaIds, useMediaMetadataById } from '../deps/media-library'
 import { assessSmartCopyEligibility } from '../utils/smart-copy'
@@ -690,6 +691,7 @@ export function ExportDialog({ open, onClose, onOpenRenderQueue }: ExportDialogP
             elapsedSeconds={elapsedSeconds}
             onClose={handleClose}
             onDownload={downloadVideo}
+            extraActions={<SaveToStudioButton result={clientRender.result} />}
           />
         )}
 
