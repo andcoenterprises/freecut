@@ -9,7 +9,10 @@
  */
 
 export interface StudioLink {
-  postId: string
+  /** A post's own edit, or a video made for the sub-account from its saved media. Older links have no kind: they're posts. */
+  kind?: 'post' | 'workspace'
+  /** The post, for a post's edit. */
+  postId?: string
   workspaceId: string
   /** Where Studio is (the editor is served under it): e.g. https://studio.alumiai.com */
   origin: string
@@ -56,6 +59,30 @@ export function setLinkMediaMap(projectId: string, mediaMap: Record<string, stri
   const link = links[projectId]
   if (!link) return
   write({ ...links, [projectId]: { ...link, mediaMap } })
+}
+
+export const linkKind = (link: StudioLink): 'post' | 'workspace' =>
+  link.kind ?? (link.postId ? 'post' : 'workspace')
+
+/** Where the project JSON is kept in Studio (PUT) and read back (GET). */
+export function projectSyncUrl(link: StudioLink, projectId: string): string {
+  return linkKind(link) === 'post'
+    ? `${link.origin}/api/creative/editor/${encodeURIComponent(link.postId ?? '')}`
+    : `${link.origin}/api/creative/editor/workspace/${encodeURIComponent(link.workspaceId)}/projects/${encodeURIComponent(projectId)}`
+}
+
+/** Where an uploaded file is recorded in Studio (POST { pathname, url, name }). */
+export function uploadRecordUrl(link: StudioLink): string {
+  return linkKind(link) === 'post'
+    ? `${link.origin}/api/creative/editor/${encodeURIComponent(link.postId ?? '')}`
+    : `${link.origin}/api/creative/editor/workspace/${encodeURIComponent(link.workspaceId)}`
+}
+
+/** The Blob path uploads go under; Studio's upload token only allows the sub-account's own. */
+export function uploadPathPrefix(link: StudioLink): string {
+  return linkKind(link) === 'post'
+    ? `creative/${link.workspaceId}/media/${link.postId ?? ''}/`
+    : `creative/${link.workspaceId}/media/library/`
 }
 
 export function forgetProjectLink(projectId: string): void {
