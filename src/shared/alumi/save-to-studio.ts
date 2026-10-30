@@ -8,7 +8,7 @@
  */
 
 import { upload } from '@vercel/blob/client'
-import type { StudioLink } from './links'
+import { uploadPathPrefix, uploadRecordUrl, type StudioLink } from './links'
 
 const MULTIPART_FROM_BYTES = 20 * 1024 * 1024
 
@@ -30,20 +30,17 @@ export async function uploadFileToStudio(
 ): Promise<{ ok: true; mediaId: string } | { ok: false; error: string }> {
   const name = file.name.replace(/[^\w.\- ]+/g, '_').slice(0, 80) || 'file'
   try {
-    const stored = await upload(`creative/${link.workspaceId}/media/${link.postId}/${name}`, file, {
+    const stored = await upload(`${uploadPathPrefix(link)}${name}`, file, {
       access: 'private',
       handleUploadUrl: `${link.origin}/api/creative/files/upload`,
       clientPayload: JSON.stringify({ workspaceId: link.workspaceId, kind: 'post-media' }),
       multipart: file.size > MULTIPART_FROM_BYTES,
     })
-    const response = await fetchImpl(
-      `${link.origin}/api/creative/editor/${encodeURIComponent(link.postId)}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pathname: stored.pathname, url: stored.url, name }),
-      },
-    )
+    const response = await fetchImpl(uploadRecordUrl(link), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pathname: stored.pathname, url: stored.url, name }),
+    })
     const data = (await response.json().catch(() => ({}))) as {
       error?: string
       media?: { id?: string }

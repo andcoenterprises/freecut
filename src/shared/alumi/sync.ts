@@ -12,7 +12,7 @@
 import type { Project, ProjectTimeline } from '@/types/project'
 import { createLogger } from '@/shared/logging/logger'
 import { onProjectSaved } from './sync-events'
-import { setLinkMediaMap, studioLinkForProject, type StudioLink } from './links'
+import { projectSyncUrl, setLinkMediaMap, studioLinkForProject, type StudioLink } from './links'
 import { uploadFileToStudio } from './save-to-studio'
 
 const logger = createLogger('StudioSync')
@@ -96,10 +96,11 @@ export async function syncProjectToStudio(
   }
   const fetchImpl = deps.fetchImpl ?? fetch
   try {
-    const response = await fetchImpl(
-      `${link.origin}/api/creative/editor/${encodeURIComponent(link.postId)}`,
-      { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body },
-    )
+    const response = await fetchImpl(projectSyncUrl(link, project.id), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    })
     if (!response.ok) {
       const data = (await response.json().catch(() => ({}))) as { error?: string }
       return { ok: false, error: data.error || `Studio answered ${response.status}.` }
