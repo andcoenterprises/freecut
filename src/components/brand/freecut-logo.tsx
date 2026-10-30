@@ -1,5 +1,8 @@
 import { cn } from '@/shared/ui/cn'
 
+/** Product name shown in the logo; a host app can rebrand it with VITE_BRAND_NAME. */
+const BRAND_NAME = import.meta.env.VITE_BRAND_NAME || 'FreeCut'
+
 interface FreeCutLogoProps {
   variant?: 'full' | 'icon'
   size?: 'sm' | 'md' | 'lg'
@@ -46,7 +49,7 @@ export function FreeCutLogo({ variant = 'full', size = 'md', className }: FreeCu
     <div className={cn('flex items-center', config.gap, className)}>
       <ScissorIcon className={cn(config.icon, 'text-primary')} />
       <span className={cn(config.text, 'font-semibold tracking-tight text-foreground')}>
-        FreeCut
+        {BRAND_NAME}
       </span>
     </div>
   )

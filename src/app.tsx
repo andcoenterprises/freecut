@@ -6,12 +6,17 @@ import { ErrorBoundary } from '@/components/error-boundary'
 import { PwaInstallPrompt } from '@/app/pwa-install-prompt'
 import { RouteErrorScreen } from '@/app/route-error'
 import { WorkspaceGate } from '@/features/workspace-gate/workspace-gate'
+import { APP_BASE } from '@/config/hosting'
 import { routeTree } from './routeTree.gen'
 
 // Route errors (thrown from beforeLoad/loader) never reach the React
 // ErrorBoundary below — TanStack catches them first. Without this, they render
 // its untranslated built-in fallback with the message hidden in production.
-const router = createRouter({ routeTree, defaultErrorComponent: RouteErrorScreen })
+const router = createRouter({
+  routeTree,
+  defaultErrorComponent: RouteErrorScreen,
+  ...(APP_BASE ? { basepath: APP_BASE } : {}),
+})
 const LazyToaster = lazy(async () => {
   const { Toaster } = await import('@/components/ui/sonner')
   return { default: Toaster }

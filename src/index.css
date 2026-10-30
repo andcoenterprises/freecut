@@ -384,3 +384,31 @@ body.canvas-translate-cursor-not-allowed * {
     animation: none;
   }
 }
+
+/* AlumiAI Studio theme (hosted builds set data-host="alumi" on <html>). */
+@layer base {
+  :root[data-host='alumi'] {
+    --background: oklch(0.198 0.008 285.6); /* #151519 */
+    --foreground: oklch(0.95 0.003 286.3); /* #eeeef0 */
+    --card: oklch(0.225 0.012 285.4); /* #1b1b21 */
+    --card-foreground: oklch(0.95 0.003 286.3);
+    --popover: oklch(0.225 0.012 285.4);
+    --popover-foreground: oklch(0.95 0.003 286.3);
+    --primary: oklch(0.804 0.146 219.5); /* #00d4ff */
+    --primary-foreground: oklch(0.179 0.006 285.8);
+    --secondary: oklch(0.259 0.011 285.6);
+    --muted: oklch(0.259 0.011 285.6);
+    --accent: oklch(0.288 0.014 285.5);
+    --border: oklch(0.288 0.014 285.5);
+    --input: oklch(0.288 0.014 285.5);
+    --ring: oklch(0.804 0.146 219.5);
+    --panel-bg: oklch(0.225 0.012 285.4);
+    --panel-header: oklch(0.198 0.008 285.6);
+    --timeline-bg: oklch(0.179 0.006 285.8);
+    --sidebar: oklch(0.225 0.012 285.4);
+    --sidebar-primary: oklch(0.804 0.146 219.5);
+    --sidebar-primary-foreground: oklch(0.179 0.006 285.8);
+    --sidebar-border: oklch(0.288 0.014 285.5);
+    --sidebar-ring: oklch(0.804 0.146 219.5);
+  }
+}
