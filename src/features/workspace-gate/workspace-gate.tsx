@@ -30,6 +30,7 @@ import {
   saveWorkspaceHandleRecord,
 } from '@/infrastructure/storage/handles-db'
 import { onPermissionLost, setWorkspaceRoot } from '@/infrastructure/storage/workspace-fs/root'
+import { HOSTED } from '@/config/hosting'
 import { createLogger } from '@/shared/logging/logger'
 import { WorkspaceGateSplash } from './workspace-gate-splash'
 import { usePathname } from './use-pathname'
@@ -57,7 +58,9 @@ export function WorkspaceGate({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null)
   const { t } = useTranslation()
   const pathname = usePathname()
-  const needsWorkspace = isStorageProtectedPath(pathname)
+  // Hosted builds skip the landing page and redirect straight into projects, so
+  // every route needs the workspace (OPFS, ready instantly with no prompt).
+  const needsWorkspace = HOSTED || isStorageProtectedPath(pathname)
 
   const activate = useCallback(async (handle: FileSystemDirectoryHandle) => {
     setWorkspaceRoot(handle)
@@ -86,6 +89,14 @@ export function WorkspaceGate({ children }: { children: React.ReactNode }) {
     if (!needsWorkspace) return
     let cancelled = false
     ;(async () => {
+      if (HOSTED) {
+        // Embedded in a host app: keep projects in the browser's private file
+        // system (OPFS), so there's no folder to pick and no permission prompt.
+        const opfs = await navigator.storage.getDirectory()
+        const handle = await opfs.getDirectoryHandle('freecut-workspace', { create: true })
+        if (!cancelled) await activate(handle)
+        return
+      }
       if (!isFileSystemAccessSupported()) {
         if (!cancelled) setStatus({ kind: 'unavailable' })
         return

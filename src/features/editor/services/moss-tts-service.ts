@@ -1,3 +1,4 @@
+import { withBase } from '@/config/hosting'
 import { createLogger } from '@/shared/logging/logger'
 import { sanitizeAiOutputFileNameSegment } from '@/shared/utils/ai-output-filename'
 import {
@@ -11,7 +12,7 @@ const logger = createLogger('MossTtsService')
 
 const HOST_SOURCE = 'freecut-moss-tts-worker'
 const CLIENT_SOURCE = 'freecut-moss-tts-client'
-const WORKER_PATH = '/moss-tts/moss_tts.worker.js'
+const WORKER_PATH = withBase('/moss-tts/moss_tts.worker.js')
 const MODEL_KEY = 'nano-zh'
 const MODEL_LABEL = 'Multilingual Nano'
 const ESTIMATED_BYTES = 785_000_000

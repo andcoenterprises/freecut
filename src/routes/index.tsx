@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { HOSTED } from '@/config/hosting'
 import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import {
@@ -33,6 +34,10 @@ import {
 } from '@/components/ui/accordion'
 
 export const Route = createFileRoute('/')({
+  // Embedded in a host app there's no marketing page: go straight to projects.
+  beforeLoad: () => {
+    if (HOSTED) throw redirect({ to: '/projects' })
+  },
   component: LandingPage,
 })
 

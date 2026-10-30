@@ -1,4 +1,5 @@
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { HOSTED } from '@/config/hosting'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -56,23 +57,27 @@ function NewProject() {
             <FreeCutLogo variant="full" size="md" className="hover:opacity-80 transition-opacity" />
           </Link>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="lg" className="gap-2" asChild>
-              <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">
-                <DiscordIcon className="w-4 h-4" />
-                Discord
-              </a>
-            </Button>
-            <Button variant="outline" size="icon" className="h-10 w-10" asChild>
-              <a
-                href="https://github.com/walterlow/freecut"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-tooltip={t('projects.viewOnGitHub')}
-                data-tooltip-side="left"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-            </Button>
+            {!HOSTED && (
+              <Button variant="outline" size="lg" className="gap-2" asChild>
+                <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">
+                  <DiscordIcon className="w-4 h-4" />
+                  Discord
+                </a>
+              </Button>
+            )}
+            {!HOSTED && (
+              <Button variant="outline" size="icon" className="h-10 w-10" asChild>
+                <a
+                  href="https://github.com/walterlow/freecut"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-tooltip={t('projects.viewOnGitHub')}
+                  data-tooltip-side="left"
+                >
+                  <Github className="w-5 h-5" />
+                </a>
+              </Button>
+            )}
           </div>
         </div>
       </div>

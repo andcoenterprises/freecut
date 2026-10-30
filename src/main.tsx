@@ -1,4 +1,5 @@
 import { StrictMode } from 'react'
+import { APP_BASE, HOSTED } from '@/config/hosting'
 import { createRoot } from 'react-dom/client'
 import { i18n, i18nReady } from './i18n'
 import { App } from './app'
@@ -154,7 +155,7 @@ async function checkForAppShellUpdate() {
   }
   appShellUpdateCheckInFlight = true
   try {
-    const response = await fetch(`/?__freecut_update_check=${Date.now()}`, {
+    const response = await fetch(`${APP_BASE}/?__freecut_update_check=${Date.now()}`, {
       cache: 'no-store',
       headers: {
         'Cache-Control': 'no-cache',
@@ -273,7 +274,7 @@ window.addEventListener('vite:preloadError', (event) => {
 // should survive refresh/reload.
 // The browser tears down workers/resources on navigation anyway.
 
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+if (import.meta.env.PROD && !HOSTED && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
@@ -295,6 +296,8 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
     })
   })
 }
+
+if (HOSTED) document.documentElement.dataset.host = 'alumi'
 
 const rootElement = document.getElementById('root')
 

@@ -36,6 +36,7 @@ import { LegacyMigrationBanner } from '@/features/projects/components/legacy-mig
 import { LegacyMigrationErrors } from '@/features/projects/components/legacy-migration-errors'
 import { TrashSection } from '@/features/projects/components/trash-section'
 import { WorkspaceIndicator } from '@/features/workspace-gate'
+import { HOSTED } from '@/config/hosting'
 import { LanguageSwitcher } from '@/shared/ui/language-switcher'
 
 export const Route = createLazyFileRoute('/projects/')({
@@ -273,27 +274,31 @@ function ProjectsIndex() {
                   Docs
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" className="gap-2 px-4" asChild>
-                <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">
-                  <DiscordIcon className="w-4 h-4" />
-                  Discord
-                </a>
-              </Button>
-              <Button variant="outline" size="lg" className="gap-2 px-4" asChild>
-                <a
-                  href="https://github.com/walterlow/freecut"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={t('projects.viewOnGitHub')}
-                >
-                  <Github className="w-4 h-4" />
-                  GitHub
-                </a>
-              </Button>
+              {!HOSTED && (
+                <Button variant="outline" size="lg" className="gap-2 px-4" asChild>
+                  <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">
+                    <DiscordIcon className="w-4 h-4" />
+                    Discord
+                  </a>
+                </Button>
+              )}
+              {!HOSTED && (
+                <Button variant="outline" size="lg" className="gap-2 px-4" asChild>
+                  <a
+                    href="https://github.com/walterlow/freecut"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={t('projects.viewOnGitHub')}
+                  >
+                    <Github className="w-4 h-4" />
+                    GitHub
+                  </a>
+                </Button>
+              )}
 
               <Separator orientation="vertical" className="h-6" />
 
-              <WorkspaceIndicator />
+              {!HOSTED && <WorkspaceIndicator />}
               <Button
                 variant="outline"
                 size="lg"
