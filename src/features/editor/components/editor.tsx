@@ -54,6 +54,7 @@ import {
   useRenderQueueStore,
 } from '@/features/editor/deps/export-contract'
 import { getEditorLayout, getEditorLayoutCssVars } from '@/config/editor-layout'
+import { BUNDLE_TAG } from '@/config/brand'
 import { EDITOR_WORKSPACE_TIMELINE_SIZE, type EditorWorkspaceId } from '@/config/editor-workspaces'
 import {
   createProjectUpgradeBackup,
@@ -633,11 +634,11 @@ export const LoadedEditor = memo(function LoadedEditor({
         .substring(0, 100)
       try {
         const handle = await window.showSaveFilePicker({
-          suggestedName: `${safeName}.freecut.zip`,
+          suggestedName: `${safeName}.${BUNDLE_TAG}.zip`,
           types: [
             {
               description: i18n.t('editor.editor.projectBundle'),
-              accept: { 'application/zip': ['.freecut.zip'] },
+              accept: { 'application/zip': [`.${BUNDLE_TAG}.zip`] },
             },
           ],
         })

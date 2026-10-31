@@ -1,3 +1,5 @@
+import { BUNDLE_TAG } from '@/config/brand'
+
 /**
  * Project Bundle Types
  *
@@ -23,8 +25,8 @@ type BundleTimeline = Omit<ProjectTimeline, 'items' | 'compositions'> & {
 // Bundle format version
 export const BUNDLE_VERSION = '1.0'
 
-// Bundle file extension
-export const BUNDLE_EXTENSION = '.freecut.zip'
+// Bundle file extension (".freecut.zip" upstream; a rebranded build uses its own tag)
+export const BUNDLE_EXTENSION = `.${BUNDLE_TAG}.zip`
 
 /**
  * Manifest file structure (manifest.json in bundle)
