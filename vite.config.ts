@@ -44,6 +44,43 @@ function serviceWorkerVersionPlugin(): Plugin {
   }
 }
 
+// A rebranded build (VITE_BRAND_NAME) puts its own name in the tab title and app-name
+// metas of every HTML entry; a build hosted inside AlumiAI Studio (VITE_HOSTED=alumi)
+// also uses Studio's icon as the favicon and drops the PWA manifest (no app install there).
+function brandHtmlPlugin(): Plugin {
+  const brand = process.env.VITE_BRAND_NAME
+  const hosted = process.env.VITE_HOSTED === 'alumi'
+  return {
+    name: 'freecut-brand-html',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        let out = html
+        if (brand) {
+          out = out
+            .replace(
+              /<title>([^<]*)<\/title>/,
+              (_m, t: string) => `<title>${t.replace(/\bFreeCut\b/g, brand)}</title>`,
+            )
+            .replace(
+              /(name="(?:application-name|apple-mobile-web-app-title)" content=")FreeCut(")/g,
+              `$1${brand}$2`,
+            )
+        }
+        if (hosted) {
+          out = out
+            .replace(
+              '<link rel="icon" type="image/svg+xml" href="/favicon.svg" />',
+              '<link rel="icon" type="image/svg+xml" href="/alumi-icon.svg" />',
+            )
+            .replace(/\s*<link rel="manifest" href="\/manifest.webmanifest" \/>/, '')
+        }
+        return out
+      },
+    },
+  }
+}
+
 const oxlintConfig = JSON.parse(readFileSync(new URL('./.oxlintrc.json', import.meta.url), 'utf8'))
 const oxfmtConfig = JSON.parse(readFileSync(new URL('./.oxfmtrc.json', import.meta.url), 'utf8'))
 const toolIgnorePatterns = [
@@ -98,7 +135,12 @@ export default defineConfig({
       },
     },
   },
-  plugins: lazyPlugins(() => [react(), tailwindcss(), serviceWorkerVersionPlugin()]),
+  plugins: lazyPlugins(() => [
+    react(),
+    tailwindcss(),
+    serviceWorkerVersionPlugin(),
+    brandHtmlPlugin(),
+  ]),
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

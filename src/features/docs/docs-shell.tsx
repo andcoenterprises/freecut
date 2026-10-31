@@ -11,6 +11,7 @@ import {
   Search,
 } from 'lucide-react'
 import { FreeCutLogo } from '@/components/brand/freecut-logo'
+import { BRAND_NAME } from '@/config/brand'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/shared/ui/cn'
 import {
@@ -58,7 +59,7 @@ export function DocsShell({ children, currentSlug }: DocsShellProps) {
           </Link>
           <nav className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm">
-              <Link to="/projects">Open FreeCut</Link>
+              <Link to="/projects">Open {BRAND_NAME}</Link>
             </Button>
             <Button asChild variant="outline" size="sm">
               <Link to="/">Home</Link>
@@ -154,10 +155,10 @@ export function DocsHome() {
       <section className="rounded-lg border border-border bg-card p-6 sm:p-8">
         <div className="mb-4 flex items-center gap-2 text-primary">
           <BookOpen className="h-5 w-5" />
-          <span className="text-sm font-medium">FreeCut documentation</span>
+          <span className="text-sm font-medium">{BRAND_NAME} documentation</span>
         </div>
         <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">
-          FreeCut User Guide
+          {BRAND_NAME} User Guide
         </h1>
         <p className="mt-4 max-w-3xl text-muted-foreground">
           Start with setup, workspaces, media import, timeline editing, and export. Use the

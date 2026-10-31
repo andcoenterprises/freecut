@@ -2,6 +2,7 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { createLogger } from '@/shared/logging/logger'
+import { brandText } from '@/config/brand'
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES, resolveSupportedLanguage } from './languages'
 import en from './locales/en.json'
 
@@ -76,8 +77,15 @@ const resources = {
 void i18n
   .use(LanguageDetector)
   .use(initReactI18next)
+  // A rebranded build (VITE_BRAND_NAME) shows its own name wherever a translation says FreeCut.
+  .use({
+    type: 'postProcessor' as const,
+    name: 'brand',
+    process: (value: unknown) => (typeof value === 'string' ? brandText(value) : value),
+  })
   .init({
     resources,
+    postProcess: ['brand'],
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: SUPPORTED_LANGUAGE_CODES as string[],
     load: 'currentOnly',
@@ -112,9 +120,7 @@ export async function loadLanguageResources(lang: string): Promise<void> {
   const resolved = resolveSupportedLanguage(lang)
   if (loadedLanguages.has(resolved)) return
   const baseLoader = lazyBaseLocaleModules[`./locales/${resolved}.json`]
-  const tree: LocaleTree = baseLoader
-    ? structuredClone((await baseLoader()).default ?? {})
-    : {}
+  const tree: LocaleTree = baseLoader ? structuredClone((await baseLoader()).default ?? {}) : {}
   const prefix = `./locales/partials/${resolved}/`
   const entries = Object.entries(lazyPartialModules)
     .filter(([path]) => path.startsWith(prefix))
@@ -139,9 +145,7 @@ export const i18nReady: Promise<void> = (async () => {
   const persistedLanguage =
     typeof localStorage === 'undefined' ? null : localStorage.getItem(I18N_STORAGE_KEY)
   const detectedLanguage = typeof navigator === 'undefined' ? DEFAULT_LANGUAGE : navigator.language
-  const initial = resolveSupportedLanguage(
-    persistedLanguage ?? detectedLanguage,
-  )
+  const initial = resolveSupportedLanguage(persistedLanguage ?? detectedLanguage)
   if (initial !== DEFAULT_LANGUAGE) await loadLanguageResources(initial)
 })().catch((err) => {
   log.error('Failed to preload language resources', err)
