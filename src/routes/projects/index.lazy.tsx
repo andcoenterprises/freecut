@@ -32,6 +32,7 @@ import type { Project } from '@/types/project'
 import type { ProjectFormData } from '@/features/projects/utils/validation'
 import type { ImportProgress } from '@/features/project-bundle/types/bundle'
 import { BUNDLE_EXTENSION } from '@/features/project-bundle/types/bundle'
+import { BUNDLE_TAGS } from '@/config/brand'
 import { LegacyMigrationBanner } from '@/features/projects/components/legacy-migration-banner'
 import { LegacyMigrationErrors } from '@/features/projects/components/legacy-migration-errors'
 import { TrashSection } from '@/features/projects/components/trash-section'
@@ -65,20 +66,22 @@ function ProjectsIndex() {
 
   // Extract project name from bundle filename
   // Handles both "myproject.freecut.zip" and browser-renamed "myproject.freecut (1).zip"
+  const bundleTagPattern = (tail: string) =>
+    new RegExp(`\\.(?:${BUNDLE_TAGS.join('|')})${tail}`, 'i')
   const extractProjectName = (fileName: string): string => {
     // Remove .zip extension first
     let name = fileName.replace(/\.zip$/i, '')
     // Remove browser duplicate suffix like " (1)", " (2)", etc.
     name = name.replace(/\s*\(\d+\)$/, '')
-    // Remove .freecut suffix
-    name = name.replace(/\.freecut$/i, '')
+    // Remove the bundle tag (.freecut, or the brand's own)
+    name = name.replace(bundleTagPattern('$'), '')
     return name
   }
 
   // Check if file is a valid bundle (handles browser-renamed files like "project.freecut (1).zip")
   const isValidBundleFile = (fileName: string): boolean => {
-    // Match: anything.freecut.zip or anything.freecut (N).zip
-    return /\.freecut(\s*\(\d+\))?\.zip$/i.test(fileName)
+    // Match: anything.freecut.zip or anything.freecut (N).zip, with any accepted tag
+    return bundleTagPattern('(\\s*\\(\\d+\\))?\\.zip$').test(fileName)
   }
 
   const isLoading = useProjectsLoading()

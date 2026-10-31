@@ -11,6 +11,19 @@ const REBRANDED = BRAND_NAME !== 'FreeCut'
 /** The upstream name as a whole word, any case ("FreeCut", "freecut"); not "FreeCutProjects". */
 const UPSTREAM_NAME = /\bfreecut\b/gi
 
+/**
+ * The tag in a project bundle's file name: "name.freecut.zip" upstream, the first word
+ * of the brand name in a rebranded build ("name.alumiai.zip" for "AlumiAI Editor").
+ * Bundles with either tag open, so files from before a rebrand still import.
+ */
+export const BUNDLE_TAG: string = REBRANDED
+  ? BRAND_NAME.toLowerCase()
+      .split(/\s+/)[0]
+      ?.replace(/[^a-z0-9]/g, '') || 'project'
+  : 'freecut'
+/** Every bundle tag a build accepts on import. */
+export const BUNDLE_TAGS: readonly string[] = [...new Set([BUNDLE_TAG, 'freecut'])]
+
 /** `text` with the upstream product name replaced by the brand name. */
 export function brandText(text: string): string {
   return REBRANDED ? text.replace(UPSTREAM_NAME, BRAND_NAME) : text
