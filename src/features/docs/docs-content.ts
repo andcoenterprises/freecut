@@ -1,3 +1,5 @@
+import { brandDeep } from '@/config/brand'
+
 export type DocCategory = 'Start' | 'Core Editing' | 'Creative Tools' | 'Output' | 'Reference'
 
 export interface DocFigure {
@@ -52,7 +54,9 @@ const orderedDocPageContent = Object.values(pageModules)
   .map((module) => module.default)
   .sort((a, b) => a.order - b.order)
 
-export const DOC_PAGES: DocPage[] = orderedDocPageContent.map(({ order: _order, ...page }) => page)
+export const DOC_PAGES: DocPage[] = orderedDocPageContent.map(({ order: _order, ...page }) =>
+  brandDeep(page),
+)
 
 export const DOC_GROUPS: DocCategory[] = [
   'Start',

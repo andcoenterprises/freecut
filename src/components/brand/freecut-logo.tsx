@@ -1,7 +1,5 @@
 import { cn } from '@/shared/ui/cn'
-
-/** Product name shown in the logo; a host app can rebrand it with VITE_BRAND_NAME. */
-const BRAND_NAME = import.meta.env.VITE_BRAND_NAME || 'FreeCut'
+import { BRAND_NAME } from '@/config/brand'
 
 interface FreeCutLogoProps {
   variant?: 'full' | 'icon'
