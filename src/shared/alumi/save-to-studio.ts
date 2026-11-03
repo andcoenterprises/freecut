@@ -7,6 +7,7 @@
  * same-origin, so they carry the user's own session.
  */
 
+import { refreshStudioSession } from './session'
 import { upload } from '@vercel/blob/client'
 import { uploadPathPrefix, uploadRecordUrl, type StudioLink } from './links'
 
@@ -29,6 +30,7 @@ export async function uploadFileToStudio(
   fetchImpl: typeof fetch = fetch,
 ): Promise<{ ok: true; mediaId: string } | { ok: false; error: string }> {
   const name = file.name.replace(/[^\w.\- ]+/g, '_').slice(0, 80) || 'file'
+  await refreshStudioSession()
   try {
     const stored = await upload(`${uploadPathPrefix(link)}${name}`, file, {
       access: 'private',

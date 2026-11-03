@@ -5,14 +5,20 @@
 
 import { mediaLibraryService } from '@/features/media-library/services/media-library-service'
 import { getMedia } from '@/infrastructure/storage'
+import { keepStudioSessionFresh } from '@/shared/alumi/session'
 import { startStudioSync } from '@/shared/alumi/sync'
 
 export function startAlumiSync(): () => void {
-  return startStudioSync({
+  const stopSession = keepStudioSessionFresh()
+  const stopSync = startStudioSync({
     getMediaFile: (id) => mediaLibraryService.getMediaFile(id),
     getMediaInfo: async (id) => {
       const media = await getMedia(id)
       return media ? { fileName: media.fileName, mimeType: media.mimeType } : undefined
     },
   })
+  return () => {
+    stopSync()
+    stopSession()
+  }
 }

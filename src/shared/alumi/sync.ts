@@ -14,6 +14,7 @@ import { createLogger } from '@/shared/logging/logger'
 import { onProjectSaved } from './sync-events'
 import { projectSyncUrl, setLinkMediaMap, studioLinkForProject, type StudioLink } from './links'
 import { uploadFileToStudio } from './save-to-studio'
+import { refreshStudioSession } from './session'
 
 const logger = createLogger('StudioSync')
 
@@ -95,6 +96,7 @@ export async function syncProjectToStudio(
     return { ok: false, error: 'This project is too big to keep in Studio (over 4 MB).' }
   }
   const fetchImpl = deps.fetchImpl ?? fetch
+  await refreshStudioSession()
   try {
     const response = await fetchImpl(projectSyncUrl(link, project.id), {
       method: 'PUT',
