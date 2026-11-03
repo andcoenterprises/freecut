@@ -44,6 +44,19 @@
           "value": "same-origin"
         }
       ]
+    },
+    {
+      "source": "/session-keepalive.html",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ]
 }
