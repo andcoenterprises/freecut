@@ -159,3 +159,48 @@ export function formatQuote(
   }).format(q.amount)
   return q.typical ? `About ${money}` : money
 }
+
+// ── Edit with Alu ───────────────────────────────────────────────────────────────
+// /api/creative/editor/workspace/<ws>/edit: a request in plain words → the editor's own
+// edit ops, charged to the sub-account's wallet at what the AI actually used.
+
+export type AluOp = { op: string; args: Record<string, unknown>; callerId?: string }
+export type AluPlan = {
+  understood: string
+  ops: AluOp[]
+  summary: string[]
+  notes: string[]
+  checkFrames: number[]
+}
+export type AluMoney = { amount: number; currency: string }
+export type AluRequest = {
+  request: string
+  timeline: string
+  catalog: string
+  review?: { plan: string; frames: { frame: number; jpegBase64: string }[] }
+}
+
+const editUrl = (link: StudioLink) =>
+  `${link.origin}/api/creative/editor/workspace/${encodeURIComponent(link.workspaceId)}/edit`
+
+export function loadAluOptions(link: StudioLink, fetchImpl: Fetch = fetch) {
+  return call<{ ready: boolean; estimate: (AluMoney & { free: boolean }) | null }>(
+    editUrl(link),
+    undefined,
+    fetchImpl,
+  )
+}
+
+export function askAlu(link: StudioLink, body: AluRequest, fetchImpl: Fetch = fetch) {
+  return call<{ plan: AluPlan; charged: AluMoney }>(editUrl(link), post(body), fetchImpl)
+}
+
+/** "A$0.42" (two decimals; a charge under a cent shows as under a cent). */
+export function formatMoney(m: AluMoney): string {
+  if (m.amount > 0 && m.amount < 0.01) {
+    return `under ${new Intl.NumberFormat(undefined, { style: 'currency', currency: m.currency }).format(0.01)}`
+  }
+  return new Intl.NumberFormat(undefined, { style: 'currency', currency: m.currency }).format(
+    m.amount,
+  )
+}
