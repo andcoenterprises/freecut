@@ -1,3 +1,4 @@
+import { withBase } from '@/config/hosting'
 import { Trans, useTranslation } from 'react-i18next'
 import { FolderOpen, FolderX, Loader2, RefreshCw, AlertTriangle, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -46,7 +47,7 @@ export function WorkspaceGateSplash({ status, error, onPickFolder, onReconnect }
               {t('projects.workspaceGate.unsupportedBrowserDescription')}
             </p>
             <Button asChild variant="outline" size="sm" className="gap-2">
-              <a href="/docs/workspaces">
+              <a href={withBase('/docs/workspaces')}>
                 <BookOpen className="h-4 w-4" />
                 {t('projects.workspaceGate.workspaceGuide')}
               </a>
@@ -70,7 +71,7 @@ export function WorkspaceGateSplash({ status, error, onPickFolder, onReconnect }
                 {t('projects.workspaceGate.chooseFolder')}
               </Button>
               <Button asChild variant="outline" size="lg" className="gap-2">
-                <a href="/docs/workspaces">
+                <a href={withBase('/docs/workspaces')}>
                   <BookOpen className="h-4 w-4" />
                   {t('projects.workspaceGate.workspaceGuide')}
                 </a>
@@ -105,7 +106,7 @@ export function WorkspaceGateSplash({ status, error, onPickFolder, onReconnect }
               </Button>
             </div>
             <Button asChild variant="ghost" size="sm" className="gap-2">
-              <a href="/docs/workspaces">
+              <a href={withBase('/docs/workspaces')}>
                 <BookOpen className="h-4 w-4" />
                 {t('projects.workspaceGate.workspaceGuide')}
               </a>

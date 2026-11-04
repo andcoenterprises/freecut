@@ -1,4 +1,6 @@
 import { brandDeep } from '@/config/brand'
+import { HOSTED } from '@/config/hosting'
+import { hostedPages } from './hosted-docs'
 
 export type DocCategory = 'Start' | 'Core Editing' | 'Creative Tools' | 'Output' | 'Reference'
 
@@ -50,9 +52,12 @@ type DocPageModule = { default: DocPageContent }
 
 const pageModules = import.meta.glob<DocPageModule>('./pages/*.ts', { eager: true })
 
-const orderedDocPageContent = Object.values(pageModules)
+const upstreamPages = Object.values(pageModules)
   .map((module) => module.default)
   .sort((a, b) => a.order - b.order)
+
+// Inside AlumiAI Studio the guide covers how the editor works there (see hosted-docs.ts).
+const orderedDocPageContent = HOSTED ? hostedPages(upstreamPages) : upstreamPages
 
 export const DOC_PAGES: DocPage[] = orderedDocPageContent.map(({ order: _order, ...page }) =>
   brandDeep(page),

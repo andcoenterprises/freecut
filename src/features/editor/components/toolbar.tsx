@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import { HOSTED } from '@/config/hosting'
+import { HOSTED, withBase } from '@/config/hosting'
 import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import {
@@ -262,7 +262,7 @@ export const Toolbar = memo(function Toolbar({
         {/* Utility */}
         <Button variant="outline" size="icon" className="h-7 w-7" asChild>
           <a
-            href="/docs"
+            href={withBase('/docs')}
             target="_blank"
             rel="noopener noreferrer"
             data-tooltip="User Guide"
