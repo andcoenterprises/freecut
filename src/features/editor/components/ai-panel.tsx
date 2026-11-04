@@ -83,6 +83,7 @@ import {
 import { insertGeneratedAudioOnNewTrack } from '../utils/insert-generated-audio'
 import { HOSTED } from '@/config/hosting'
 import { StudioAiSection } from './studio-ai-section'
+import { AluEditSection } from './alu-edit-section'
 import { getLanguageDisplayName, insertTextAtCursor } from '../utils/tts-ui-helpers'
 
 const MUSIC_PROMPT_PRESETS = [
@@ -699,6 +700,7 @@ export const AiPanel = memo(function AiPanel() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto p-3">
       <div className="space-y-3">
+        {HOSTED && currentProjectId && <AluEditSection projectId={currentProjectId} />}
         {HOSTED && currentProjectId && <StudioAiSection projectId={currentProjectId} />}
         <Collapsible open={ttsSectionOpen} onOpenChange={setTtsSectionOpen}>
           <div className="-mx-3 -mt-3 bg-secondary/50 px-3 py-2">

@@ -442,7 +442,12 @@ function applySetTransform(op: EditOp): unknown {
   if (!id || !op.transform || typeof op.transform !== 'object') {
     throw new Error('setTransform requires `id` and `transform`')
   }
-  requireItem(id)
+  const item = requireItem(id)
+  // The store only merges into an existing transform; items made by these ops (addText,
+  // addClip) start without one, which made setTransform a silent no-op on them.
+  if (!('transform' in item) || !item.transform) {
+    updateItem(id, { transform: {} } as Partial<TimelineItem>)
+  }
   updateItemTransform(id, op.transform as Partial<TransformProperties>)
   return { id }
 }

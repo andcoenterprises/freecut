@@ -140,6 +140,24 @@ function applyOpTracked(
   }
 }
 
+/**
+ * Apply ops to the timeline stores as they stand (the open editor), in order, with the
+ * same validation and $ref resolution as editProject. Throws on the first failing op;
+ * the caller owns rollback and history (each op still records its own undo entry).
+ */
+export function applyEditOpsLive(
+  ops: EditOp[],
+  canvas: { width: number; height: number; fps: number },
+): HeadlessEditResult['results'] {
+  setEditCanvas(canvas)
+  const results: HeadlessEditResult['results'] = []
+  const prior = new Map<string, HeadlessEditResult['results'][number]>()
+  const callerIds = ops.map((op) => asString(op.callerId)).filter(Boolean) as string[]
+  if (new Set(callerIds).size !== callerIds.length) throw new Error('Duplicate edit callerId')
+  for (const rawOp of ops) applyOpTracked(rawOp, prior, results)
+  return results
+}
+
 export async function editProject(input: HeadlessEditInput): Promise<HeadlessEditResult> {
   const { project: migrated } = migrateProject(input.project)
   setEditCanvas({
